@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import CertificatePreview from "@/components/certificate-preview"
@@ -12,26 +13,38 @@ type Verified = null | {
   serial: string
   issued_at: string
 }
-
 export default function VerifyPage() {
-  const [serial, setSerial] = useState("")
-  const [verified, setVerified] = useState<Verified>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
 
-  const onVerify = async () => {
-    setError(null)
-    setLoading(true)
-    setVerified(null)
-    const res = await fetch(`/api/verify?serial=${encodeURIComponent(serial)}`)
-    setLoading(false)
+  const searchParams = useSearchParams();
+  const [serial, setSerial] = useState("");
+  const [verified, setVerified] = useState<Verified>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const onVerify = async (serialToVerify?: string) => {
+    setError(null);
+    setLoading(true);
+    setVerified(null);
+    const serialParam = serialToVerify ?? serial;
+    const res = await fetch(`/api/verify?serial=${encodeURIComponent(serialParam)}`);
+    setLoading(false);
     if (!res.ok) {
-      setError("Certificate not found.")
-      return
+      setError("Certificate not found.");
+      return;
     }
-    const data = await res.json()
-    setVerified(data)
-  }
+    const data = await res.json();
+    setVerified(data);
+  };
+
+  // Auto-fetch if serial is present in URL
+  useEffect(() => {
+    const urlSerial = searchParams.get("serial");
+    if (urlSerial && urlSerial !== serial) {
+      setSerial(urlSerial);
+      onVerify(urlSerial);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 px-4 py-6">
@@ -47,7 +60,7 @@ export default function VerifyPage() {
           value={serial}
           onChange={(e) => setSerial(e.target.value)}
         />
-        <Button onClick={onVerify} disabled={!serial || loading}>
+        <Button onClick={() => onVerify()} disabled={!serial || loading}>
           {loading ? "Checking..." : "Verify"}
         </Button>
       </div>
