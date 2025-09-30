@@ -107,7 +107,13 @@ export default function CertificatePreview({
       setIsLoadingQR(true)
       try {
         await new Promise((resolve) => setTimeout(resolve, 200))
-        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrPayload || serial || "QuroTech")}`
+      // Prefer canonical certificate URL so scanning the QR opens the public certificate page
+    const runtimeBase = (typeof window !== 'undefined' && window.location.origin) ? window.location.origin : (process.env.NEXT_PUBLIC_SITE_URL || '')
+    // In local development, prefer explicit localhost so QR codes scanned during dev resolve to your machine
+    const fallbackDevBase = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : ''
+    const base = runtimeBase || fallbackDevBase
+    const certUrl = base ? `${base.replace(/\/$/, '')}/certificate/${encodeURIComponent(serial)}` : `/certificate/${encodeURIComponent(serial)}`
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrPayload || certUrl || serial || "QuroTech")}`
         if (!cancelled) {
           setQr(qrUrl)
           setIsLoadingQR(false)
@@ -375,7 +381,9 @@ export default function CertificatePreview({
       ctx.fillStyle = "#64748b"
       ctx.font = "16px serif"
       ctx.fillText("Date of Issue: " + new Date().toLocaleDateString(), 80, 745)
-      ctx.fillText("Verify at: qurotech.com/verify", 80, 770)
+  // Show the canonical certificate URL on the canvas footer
+  const displayCertUrl = (typeof window !== 'undefined' ? `${window.location.origin}/certificate/${encodeURIComponent(serial)}` : (process.env.NEXT_PUBLIC_SITE_URL ? `${process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, '')}/certificate/${encodeURIComponent(serial)}` : (process.env.NODE_ENV === 'development' ? `http://localhost:3000/certificate/${encodeURIComponent(serial)}` : 'qurotech.com/certificate')))
+  ctx.fillText(`Verify at: ${displayCertUrl}`, 80, 770)
 
       // Signature section
       ctx.textAlign = "right"
@@ -444,13 +452,13 @@ export default function CertificatePreview({
         await navigator.share({
           title: `${name} - ${internshipTitle} Certificate`,
           text: `Check out my certificate from Quro Tech for ${internshipTitle}`,
-          url: `${window.location.origin}/verify?serial=${encodeURIComponent(serial)}`,
+          url: `${window.location.origin}/certificate/${encodeURIComponent(serial)}`,
         })
       } catch (error) {
-        navigator.clipboard.writeText(`${window.location.origin}/verify?serial=${encodeURIComponent(serial)}`)
+    navigator.clipboard.writeText(`${window.location.origin}/certificate/${encodeURIComponent(serial)}`)
       }
     } else {
-      navigator.clipboard.writeText(`${window.location.origin}/verify?serial=${encodeURIComponent(serial)}`)
+  navigator.clipboard.writeText(`${window.location.origin}/certificate/${encodeURIComponent(serial)}`)
     }
   }
 
@@ -617,7 +625,7 @@ export default function CertificatePreview({
           </Button>
           
           <Button
-            onClick={() => window.open(`/verify?serial=${encodeURIComponent(serial)}`, "_blank")}
+            onClick={() => window.open(`/certificate/${encodeURIComponent(serial)}`, "_blank")}
             variant="secondary"
             className="flex items-center gap-2"
             size="lg"
