@@ -107,13 +107,13 @@ export default function CertificatePreview({
       setIsLoadingQR(true)
       try {
         await new Promise((resolve) => setTimeout(resolve, 200))
-      // Prefer canonical certificate URL so scanning the QR opens the public certificate page
-    const runtimeBase = (typeof window !== 'undefined' && window.location.origin) ? window.location.origin : (process.env.NEXT_PUBLIC_SITE_URL || '')
-    // In local development, prefer explicit localhost so QR codes scanned during dev resolve to your machine
-    const fallbackDevBase = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : ''
-    const base = runtimeBase || fallbackDevBase
-    const certUrl = base ? `${base.replace(/\/$/, '')}/certificate/${encodeURIComponent(serial)}` : `/certificate/${encodeURIComponent(serial)}`
-      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrPayload || certUrl || serial || "QuroTech")}`
+      // Prefer canonical verify URL so scanning the QR opens the verify page with the serial prefilled
+      const runtimeBase = (typeof window !== 'undefined' && window.location.origin) ? window.location.origin : (process.env.NEXT_PUBLIC_SITE_URL || '')
+      // In local development, prefer explicit localhost so QR codes scanned during dev resolve to your machine
+      const fallbackDevBase = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : ''
+      const base = runtimeBase || fallbackDevBase
+      const verifyUrl = base ? `${base.replace(/\/$/, '')}/verify?serial=${encodeURIComponent(serial)}` : `/verify?serial=${encodeURIComponent(serial)}`
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrPayload || verifyUrl || serial || "QuroTech")}`
         if (!cancelled) {
           setQr(qrUrl)
           setIsLoadingQR(false)
@@ -382,7 +382,7 @@ export default function CertificatePreview({
       ctx.font = "16px serif"
       ctx.fillText("Date of Issue: " + new Date().toLocaleDateString(), 80, 745)
   // Show the canonical certificate URL on the canvas footer
-  const displayCertUrl = (typeof window !== 'undefined' ? `${window.location.origin}/certificate/${encodeURIComponent(serial)}` : (process.env.NEXT_PUBLIC_SITE_URL ? `${process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, '')}/certificate/${encodeURIComponent(serial)}` : (process.env.NODE_ENV === 'development' ? `http://localhost:3000/certificate/${encodeURIComponent(serial)}` : 'qurotech.com/certificate')))
+  const displayCertUrl = (typeof window !== 'undefined' ? `${window.location.origin}/verify?serial=${encodeURIComponent(serial)}` : (process.env.NEXT_PUBLIC_SITE_URL ? `${process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, '')}/verify?serial=${encodeURIComponent(serial)}` : (process.env.NODE_ENV === 'development' ? `http://localhost:3000/verify?serial=${encodeURIComponent(serial)}` : 'qurotech.com/verify')))
   ctx.fillText(`Verify at: ${displayCertUrl}`, 80, 770)
 
       // Signature section
