@@ -1,0 +1,206 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sample Certificate Preview (Enhanced)</title>
+  <style>
+    body { font-family: Inter, Arial, sans-serif; background:#f3f4f6; display:flex; align-items:center; justify-content:center; height:100vh; margin:0 }
+    .container { width: 1200px; max-width: 95%; }
+    .controls { display:flex; gap:8px; margin-bottom:12px; align-items:center }
+    button { padding:10px 14px; border-radius:8px; border:1px solid #e5e7eb; background:#fff; cursor:pointer }
+    canvas { width:100%; border-radius:12px; box-shadow: 0 10px 30px rgba(2,6,23,0.08); display:block }
+    label { font-size:13px; margin-right:8px }
+    input, select { padding:8px 10px; border-radius:8px; border:1px solid #e5e7eb }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="controls">
+      <label>Name</label>
+      <input id="name" value="Name Surname" />
+      <label>Title</label>
+      <input id="title" value="Frontend developer Internship" />
+      <label>Duration</label>
+      <input id="duration" value="1 Month" />
+      <label>Serial</label>
+      <input id="serial" value="QT-2025-ABC123" />
+      <button id="renderBtn">Render</button>
+      <button id="downloadBtn">Download PNG</button>
+    </div>
+    <canvas id="certCanvas" width="1200" height="850"></canvas>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('certCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function normalizeTitle(raw) {
+      if (!raw) return raw
+      const s = raw.toLowerCase()
+      if (s.includes('frontend')) return 'Frontend Developer Internship'
+      if (s.includes('backend')) return 'Backend Developer Internship'
+      if (s.includes('full') && s.includes('stack')) return 'Full-Stack Developer Internship'
+      if (s.includes('data')) return 'Data Science Internship'
+      return raw
+    }
+
+    function drawCertificate({name, title, duration, serial}) {
+      const displayTitle = normalizeTitle(title)
+      // clear
+      ctx.clearRect(0,0,canvas.width, canvas.height);
+
+      // background gradients (enhanced)
+      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height)
+      gradient.addColorStop(0, '#ffffff')
+      gradient.addColorStop(0.3, '#f8fafc')
+      gradient.addColorStop(0.7, '#f1f5f9')
+      gradient.addColorStop(1, '#e2e8f0')
+      ctx.fillStyle = gradient
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+      // outer border
+      ctx.strokeStyle = '#0f172a'
+      ctx.lineWidth = 12
+      ctx.strokeRect(25, 25, canvas.width - 50, canvas.height - 50)
+
+      // inner gilded border
+      const borderGradient = ctx.createLinearGradient(0, 0, canvas.width, 0)
+      borderGradient.addColorStop(0, '#fbbf24')
+      borderGradient.addColorStop(0.5, '#f59e0b')
+      borderGradient.addColorStop(1, '#d97706')
+      ctx.strokeStyle = borderGradient
+      ctx.lineWidth = 6
+      ctx.strokeRect(35, 35, canvas.width - 70, canvas.height - 70)
+
+      // header bar
+      const headerGradient = ctx.createLinearGradient(0, 35, 0, 120)
+      headerGradient.addColorStop(0, '#1e293b')
+      headerGradient.addColorStop(1, '#334155')
+      ctx.fillStyle = headerGradient
+      ctx.fillRect(35, 35, canvas.width - 70, 85)
+
+      // company name
+      ctx.shadowColor = 'rgba(0,0,0,0.25)'
+      ctx.shadowBlur = 4
+      ctx.shadowOffsetY = 2
+      ctx.fillStyle = '#ffffff'
+      ctx.font = 'bold 52px serif'
+      ctx.textAlign = 'center'
+      ctx.fillText('🏆 Quro Tech', canvas.width / 2, 95)
+
+      // reset shadow
+      ctx.shadowColor = 'transparent'
+      ctx.shadowBlur = 0
+      ctx.shadowOffsetY = 0
+
+      // subtitle
+      ctx.fillStyle = '#fbbf24'
+      ctx.font = '22px serif'
+      ctx.fillText('• ISO 9001:2015 Certified • Trusted Digital Verification •', canvas.width / 2, 155)
+
+      // certificate header
+      ctx.fillStyle = '#1e293b'
+      ctx.font = 'italic 32px serif'
+      ctx.fillText('CERTIFICATE OF ACHIEVEMENT', canvas.width / 2, 220)
+
+      // decorative line
+      ctx.strokeStyle = '#fbbf24'
+      ctx.lineWidth = 3
+      ctx.beginPath()
+      ctx.moveTo(canvas.width / 2 - 200, 240)
+      ctx.lineTo(canvas.width / 2 + 200, 240)
+      ctx.stroke()
+
+      // main copy
+      ctx.fillStyle = '#475569'
+      ctx.font = '24px serif'
+      ctx.fillText('This is to certify that', canvas.width / 2, 290)
+
+      ctx.fillStyle = '#1e293b'
+      ctx.font = 'bold 64px serif'
+      ctx.fillText(name.toUpperCase(), canvas.width / 2, 360)
+
+      // underline under name
+      ctx.strokeStyle = '#fbbf24'
+      ctx.lineWidth = 4
+      const nameWidth = ctx.measureText(name.toUpperCase()).width
+      ctx.beginPath()
+      ctx.moveTo(canvas.width / 2 - nameWidth / 2, 375)
+      ctx.lineTo(canvas.width / 2 + nameWidth / 2, 375)
+      ctx.stroke()
+
+      ctx.fillStyle = '#475569'
+      ctx.font = '26px serif'
+      ctx.fillText('has successfully completed the comprehensive', canvas.width / 2, 420)
+
+      ctx.fillStyle = '#0f172a'
+      ctx.font = 'bold 38px serif'
+      ctx.fillText(displayTitle.toUpperCase(), canvas.width / 2, 470)
+
+      ctx.fillStyle = '#64748b'
+      ctx.font = '22px serif'
+      ctx.fillText(`Duration: ${duration}`, canvas.width / 2, 510)
+
+      ctx.fillStyle = '#475569'
+      ctx.font = '20px serif'
+      ctx.fillText('with outstanding performance and dedication', canvas.width / 2, 540)
+
+      // footer left
+      ctx.fillStyle = '#1e293b'
+      ctx.font = 'bold 18px monospace'
+      ctx.textAlign = 'left'
+      ctx.fillText(`Certificate ID: ${serial}`, 80, 720)
+
+      ctx.fillStyle = '#64748b'
+      ctx.font = '16px serif'
+      ctx.fillText('Date of Issue: ' + new Date().toLocaleDateString(), 80, 745)
+      ctx.fillText('Verify at: qurotech.com/verify', 80, 770)
+
+      // footer right
+      ctx.textAlign = 'right'
+      ctx.fillStyle = '#1e293b'
+      ctx.font = 'bold 18px serif'
+      ctx.fillText('Authorized by Quro Tech', canvas.width - 80, 720)
+      ctx.fillStyle = '#64748b'
+      ctx.font = '16px serif'
+      ctx.fillText('Digitally Verified & Secured', canvas.width - 80, 745)
+      ctx.fillText('✓ Authentic Certificate', canvas.width - 80, 770)
+
+      // QR code
+      const serialSafe = encodeURIComponent(serial)
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${serialSafe}`
+      const img = new Image()
+      img.crossOrigin = 'anonymous'
+      img.onload = () => {
+        // QR bg
+        ctx.fillStyle = '#ffffff'
+        ctx.fillRect(canvas.width - 220, 550, 170, 170)
+        ctx.strokeStyle = '#e2e8f0'
+        ctx.lineWidth = 2
+        ctx.strokeRect(canvas.width - 220, 550, 170, 170)
+        ctx.drawImage(img, canvas.width - 210, 560, 150, 150)
+      }
+      img.src = qrUrl
+    }
+
+    document.getElementById('renderBtn').addEventListener('click', () => {
+      const name = document.getElementById('name').value || 'Student'
+      const title = document.getElementById('title').value || 'Course'
+      const duration = document.getElementById('duration').value || '1 Month'
+      const serial = document.getElementById('serial').value || 'QT-2025-XXXX'
+      drawCertificate({name, title, duration, serial})
+    })
+
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      const link = document.createElement('a')
+      link.download = (document.getElementById('name').value || 'student').replace(/\s+/g,'_') + '_Certificate.png'
+      link.href = canvas.toDataURL('image/png')
+      link.click()
+    })
+
+    // initial render
+    drawCertificate({name: document.getElementById('name').value, title: document.getElementById('title').value, duration: document.getElementById('duration').value, serial: document.getElementById('serial').value})
+  </script>
+</body>
+</html>
