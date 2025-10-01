@@ -4,7 +4,9 @@ import { cookies } from "next/headers"
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
+    // Use request.nextUrl to avoid dynamic server usage during prerender
+    const nextUrl = (request as any).nextUrl as URL | undefined
+    const searchParams = nextUrl?.searchParams ?? new URL(request.url).searchParams
     const paymentIntentId = searchParams.get("payment_intent")
     const orderId = searchParams.get("orderId")
 

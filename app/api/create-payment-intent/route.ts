@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { cookies } from "next/headers"
 import { createServerClient } from "@supabase/ssr"
-import { stripe, formatAmountForStripe } from "@/lib/stripe"
+import { getStripe, formatAmountForStripe } from "@/lib/stripe"
 
 type CartItem = {
   internship: string
@@ -60,6 +60,14 @@ export async function POST(req: NextRequest) {
     }
 
     // Create Stripe PaymentIntent
+    let stripe
+    try {
+      stripe = getStripe()
+    } catch (err) {
+      console.error("Stripe not configured:", err)
+      return NextResponse.json({ error: "Stripe not configured" }, { status: 503 })
+    }
+
     const paymentIntent = await stripe.paymentIntents.create({
       amount: stripeAmount,
       currency: "inr",

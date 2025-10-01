@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { cookies } from "next/headers"
 import { createServerClient } from "@supabase/ssr"
-import { stripe } from "@/lib/stripe"
+import { getStripe } from "@/lib/stripe"
 import crypto from "crypto"
 
 function generateSerial(): string {
@@ -52,6 +52,14 @@ export async function POST(req: NextRequest) {
     }
 
     // Retrieve payment intent from Stripe
+    let stripe
+    try {
+      stripe = getStripe()
+    } catch (err) {
+      console.error("Stripe not configured:", err)
+      return NextResponse.json({ error: "Stripe not configured" }, { status: 503 })
+    }
+
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId)
 
     if (paymentIntent.status !== "succeeded") {

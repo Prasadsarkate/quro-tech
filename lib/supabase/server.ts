@@ -8,7 +8,44 @@ import { cookies } from "next/headers"
 export async function createServerClient() {
   const cookieStore = await cookies()
 
-  return createSupabaseServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  // If env vars are not configured, return a minimal guest-like client to
+  // avoid throwing during server component rendering (for example, layout).
+  // This keeps the app renderable in demo/dev environments without full
+  // Supabase configuration. API routes should still use createServerClientSync
+  // or createServerClient and handle the missing configuration as needed.
+  if (!url || !key) {
+    return {
+      auth: {
+        async getUser() {
+          return { data: { user: null }, error: null }
+        },
+      },
+      // Minimal placeholder for from/select/update used elsewhere — they will
+      // throw if used in this demo mode; this encourages using the server
+      // client only when Supabase is configured.
+      from() {
+        return {
+          select() {
+            return { data: null, error: new Error("Supabase not configured") }
+          },
+          insert() {
+            return { data: null, error: new Error("Supabase not configured") }
+          },
+          update() {
+            return { data: null, error: new Error("Supabase not configured") }
+          },
+          order() { return this },
+          limit() { return this },
+          eq() { return this },
+        }
+      },
+    } as any
+  }
+
+  return createSupabaseServerClient(url, key, {
     cookies: {
       getAll() {
         return cookieStore.getAll()
