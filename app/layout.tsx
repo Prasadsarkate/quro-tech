@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import Link from "next/link"
+import Logo from '@/components/logo'
 import { Suspense } from "react"
 import { createServerClient } from '@/lib/supabase/server'
 
@@ -25,6 +26,8 @@ export default async function RootLayout({
   const supabase = await createServerClient()
   const { data } = await supabase.auth.getUser()
   const user = data?.user ?? null
+  // choose a different logo in development (localhost) for easier testing
+  const logoSrc = process.env.NODE_ENV === 'development' ? '/images/quro-logo-new.jpg' : '/images/quro-logo.jpg'
 
   return (
     <html lang="en">
@@ -37,11 +40,14 @@ export default async function RootLayout({
           <header className="bg-primary text-primary-foreground shadow-sm">
             <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
               <Link href="/" className="flex items-center gap-2">
-                {/* Swap placeholder for real logo asset */}
-                <img src="/images/quro-logo.jpg" alt="Quro Tech logo" className="h-7 w-7" />
+                {/* Use Logo component to provide robust fallback handling */}
+                <Logo className="h-7 w-7" />
                 <span className="font-semibold text-lg">Quro Tech</span>
               </Link>
               <nav className="flex items-center gap-3">
+                <Link href="/" className="text-sm px-3 py-1.5 rounded-md hover:bg-primary/20">
+                  Home
+                </Link>
                 <Link href="/verify" className="text-sm px-3 py-1.5 rounded-md hover:bg-primary/20">
                   Verify Certificate
                 </Link>
@@ -99,6 +105,36 @@ export default async function RootLayout({
                   <li>
                     <Link href="/verify" className="hover:underline">
                       Verify Certificate
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/refund-policy" className="hover:underline">
+                      Refund Policy
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/terms" className="hover:underline">
+                      Terms &amp; Conditions
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/privacy" className="hover:underline">
+                      Privacy Policy
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/how-it-works" className="hover:underline">
+                      How it works
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/contact" className="hover:underline">
+                      Contact
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/project-disclaimer" className="hover:underline">
+                      Project Disclaimer
                     </Link>
                   </li>
                 </ul>

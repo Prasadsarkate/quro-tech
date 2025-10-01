@@ -47,13 +47,13 @@ export default function VerifyPage() {
   }, [searchParams]);
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 px-4 py-6">
+    <div className="max-w-5xl mx-auto space-y-6 px-4 py-6 sm:px-6">
       <div className="text-center">
         <h1 className="text-3xl font-semibold">Verify Certificate</h1>
         <p className="text-sm text-muted-foreground">Enter the certificate serial number to verify authenticity.</p>
       </div>
 
-      <div className="flex items-center gap-2 justify-center">
+      <div className="flex flex-col sm:flex-row items-center gap-2 justify-center">
         <Input
           className="w-full max-w-xl"
           placeholder="Enter serial e.g. QT-2025-AB123"
@@ -73,7 +73,7 @@ export default function VerifyPage() {
 
           {/* Certificate preview full-width / large */}
           <div className="flex justify-center">
-            <div className="w-full max-w-4xl">
+            <div className="w-full max-w-3xl sm:max-w-4xl">
               <CertificatePreview
                 name={verified.full_name}
                 internshipTitle={verified.internship}

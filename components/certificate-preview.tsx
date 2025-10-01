@@ -465,7 +465,7 @@ export default function CertificatePreview({
   
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6 px-2 sm:px-4">
       <div className="relative group">
         {/* Decorative background elements */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 rounded-3xl blur-3xl" />
@@ -474,10 +474,10 @@ export default function CertificatePreview({
         <div className="relative bg-background rounded-3xl border-2 border-border shadow-2xl overflow-hidden">
           {/* Elegant header with golden accent */}
           <div className="h-2 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600" />
-          
-          <div className="p-8 md:p-12 bg-gradient-to-br from-background via-background to-muted/20">
+
+          <div className="p-6 md:p-12 bg-gradient-to-br from-background via-background to-muted/20">
             {/* Header section */}
-            <div className="flex items-start justify-between mb-8">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <Award className="w-8 h-8 text-yellow-600" />
@@ -498,15 +498,15 @@ export default function CertificatePreview({
               <div className="flex items-center gap-4">
                 {/* Official seal */}
                 <div className="relative group/seal">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center shadow-lg border-4 border-yellow-300/50">
-                    <Award className="w-8 h-8 text-white" />
+                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center shadow-lg border-4 border-yellow-300/50">
+                    <Award className="w-6 h-6 md:w-8 md:h-8 text-white" />
                   </div>
                   <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-400/20 to-yellow-600/20 blur group-hover/seal:scale-110 transition-transform duration-300" />
                 </div>
                 
                 {/* QR Code */}
                 <div className="relative">
-                  <div className="w-20 h-20 rounded-xl bg-white border-2 border-muted shadow-lg p-2 group-hover:scale-105 transition-transform duration-300">
+                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl bg-white border-2 border-muted shadow-lg p-2 group-hover:scale-105 transition-transform duration-300">
                     {isLoadingQR ? (
                       <div className="flex flex-col items-center justify-center h-full gap-1">
                         <LoadingSpinner size="sm" />
@@ -539,7 +539,7 @@ export default function CertificatePreview({
               </p>
               
               <div className="relative">
-                <h3 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent leading-tight">
+                <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent leading-tight">
                   {name}
                 </h3>
                 <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full" />
