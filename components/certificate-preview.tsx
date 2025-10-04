@@ -107,13 +107,29 @@ export default function CertificatePreview({
       setIsLoadingQR(true)
       try {
         await new Promise((resolve) => setTimeout(resolve, 200))
-      // Prefer canonical verify URL so scanning the QR opens the verify page with the serial prefilled
-      const runtimeBase = (typeof window !== 'undefined' && window.location.origin) ? window.location.origin : (process.env.NEXT_PUBLIC_SITE_URL || '')
-      // In local development, prefer explicit localhost so QR codes scanned during dev resolve to your machine
-      const fallbackDevBase = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : ''
-      const base = runtimeBase || fallbackDevBase
-      const verifyUrl = base ? `${base.replace(/\/$/, '')}/verify?serial=${encodeURIComponent(serial)}` : `/verify?serial=${encodeURIComponent(serial)}`
-        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrPayload || verifyUrl || serial || "QuroTech")}`
+        
+        // If a custom QR payload is provided, use it directly
+        if (qrPayload) {
+          const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrPayload)}`
+          if (!cancelled) {
+            setQr(qrUrl)
+            setIsLoadingQR(false)
+          }
+          return;
+        }
+        
+        // Otherwise, create a verification URL
+        let verifyUrl;
+        if (typeof window !== 'undefined') {
+          // In browser, use the current origin
+          verifyUrl = `${window.location.protocol}//${window.location.host}/verify?serial=${encodeURIComponent(serial)}`
+        } else {
+          // In server/static generation, use the environment URL or a fallback
+          const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://qurotech.com'
+          verifyUrl = `${baseUrl.replace(/\/$/, '')}/verify?serial=${encodeURIComponent(serial)}`
+        }
+        
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&ecc=H&data=${encodeURIComponent(verifyUrl)}`
         if (!cancelled) {
           setQr(qrUrl)
           setIsLoadingQR(false)
