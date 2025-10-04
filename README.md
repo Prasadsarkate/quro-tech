@@ -1,1 +1,0 @@
-# quro-tech

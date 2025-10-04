@@ -1,0 +1,6 @@
+{
+  "/refund-policy/page": "app/refund-policy/page.js",
+  "/page": "app/page.js",
+  "/checkout/page": "app/checkout/page.js",
+  "/api/create-razorpay-order/route": "app/api/create-razorpay-order/route.js"
+}
